@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Career Growth Radar | Workspace Snapshot{% endblock %}
+
+{% block content %}
+<section class="page-head hero-creative">
+  <div class="head-pill">
+    <span class="pill-glow"></span>
+    <span class="pill-text">ACTIVITY & MASTERY OVERVIEW</span>
+  </div>
+  <h1>Career Growth Radar<br><span class="gradient-text">Your Progression Dashboard.</span></h1>
+  <p class="lead">
+    A holistic view of all learning activities, doubt resolutions, mission achievements, and real-world evidence logged
+    in this workspace.
+  </p>
+</section>
+
+<!-- Big Overall Confidence Card -->
+<section class="panel glass-panel confidence-highlight-bar">
+  <div class="growth-conf-flex">
+    <div class="growth-conf-left">
+      <span class="tag tag-glow">CONFIDENCE STATUS</span>
+      <h2>Overall Readiness: <span class="gradient-text">{{ confidence.score }}%</span></h2>
+      <p class="muted">Rank: <strong>{{ confidence.tier }}</strong> · Based on multi-pillar evidence and doubt
+        resolutions.</p>
+    </div>
+    <div class="growth-conf-right">
+      <a href="/confidence" class="button glow-btn">Take Benchmark Quiz ⚡</a>
+      <a href="/doubts" class="button secondary">Clear More Doubts 💡</a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+  <article class="stat glass-card">
+    <div class="stat-icon-wrap">✦</div>
+    <strong class="stat-value">{{ points }}</strong>
+    <span class="stat-name">Total Skill Points</span>
+    <small class="stat-hint">Earned through missions & doubts</small>
+  </article>
+
+  <article class="stat glass-card">
+    <div class="stat-icon-wrap">💡</div>
+    <strong class="stat-value">{{ doubts_cleared }}</strong>
+    <span class="stat-name">Doubts Cleared</span>
+    <small class="stat-hint">Conceptual clarity achieved</small>
+  </article>
+
+  <article class="stat glass-card">
+    <div class="stat-icon-wrap">⚡</div>
+    <strong class="stat-value">{{ completed }}</strong>
+    <span class="stat-name">Missions Attempted</span>
+    <small class="stat-hint">Practical coding challenges</small>
+  </article>
+
+  <article class="stat glass-card">
+    <div class="stat-icon-wrap">◈</div>
+    <strong class="stat-value">{{ passport_count }}</strong>
+    <span class="stat-name">Passport Entries</span>
+    <small class="stat-hint">Verified projects & certs</small>
+  </article>
+</div>
+
+<!-- Sprint Progress Panel -->
+<section class="panel glass-panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">ACTIVE SPRINT MILESTONES</p>
+      <h2>Learning Sprint Progress</h2>
+    </div>
+    <span class="tag">WEEKLY TARGETS</span>
+  </div>
+
+  <div class="metric-container">
+    <div class="metric-visual">
+      <div class="metric-score-wrap">
+        <span class="metric-score">{{ sprint_done }} / {{ sprint_total }}</span>
+        <span class="metric-sublabel">Tasks Completed</span>
+      </div>
+      <div class="metric-meta">
+        {% set pct = (sprint_done / sprint_total * 100)|round if sprint_total else 0 %}
+        <strong>{{ pct }}% Sprint Completion Rate</strong>
+        <p class="notice">
+          Consistent weekly sprints turn theoretical knowledge into tangible, deployable engineering habits.
+        </p>
+      </div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" style="width: {{ pct }}%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-actions" style="margin-top: 20px;">
+    <a class="button glow-btn" href="/sprint">Continue Learning Sprint →</a>
+    <a class="button secondary" href="/interview">Practise Interview Scenarios →</a>
+  </div>
+</section>
+{% endblock %}

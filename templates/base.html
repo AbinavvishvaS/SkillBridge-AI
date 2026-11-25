@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SkillBridge AI - Super Edition Career Competency Intelligence & High-Confidence Doubt Clearance">
+  <title>{% block title %}SkillBridge AI | Career Intelligence & High-Confidence Doubt Clearance{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Futuristic SkillBridge AI Topbar -->
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand-wrap">
+        <a class="brand" href="/">
+          <span class="brand-bolt">⚡</span>
+          <span class="brand-title">SkillBridge<span class="brand-ai">AI</span></span>
+        </a>
+        <span class="brand-badge">Super Edition v2.5</span>
+      </div>
+
+      <nav class="nav-links">
+        <a href="/" class="nav-item {% if request.path == '/' %}active{% endif %}">
+          <span class="nav-icon">📊</span>Assessment
+        </a>
+        <a href="/doubts" class="nav-item {% if request.path.startswith('/doubts') %}active{% endif %}">
+          <span class="nav-icon">💡</span>AI Doubts
+        </a>
+        <a href="/confidence" class="nav-item {% if request.path.startswith('/confidence') %}active{% endif %}">
+          <span class="nav-icon">🛡️</span>Confidence
+        </a>
+        <a href="/intelligence" class="nav-item {% if request.path == '/intelligence' %}active{% endif %}">
+          <span class="nav-icon">🧠</span>Intelligence
+        </a>
+        <a href="/missions" class="nav-item {% if request.path == '/missions' %}active{% endif %}">
+          <span class="nav-icon">⚔️</span>Missions
+        </a>
+        <a href="/passport" class="nav-item {% if request.path == '/passport' %}active{% endif %}">
+          <span class="nav-icon">◈</span>Passport
+        </a>
+        <a href="/sprint" class="nav-item {% if request.path == '/sprint' %}active{% endif %}">
+          <span class="nav-icon">🚀</span>Sprint
+        </a>
+        <a href="/interview" class="nav-item {% if request.path == '/interview' %}active{% endif %}">
+          <span class="nav-icon">🎙️</span>Interview
+        </a>
+        <a href="/projects" class="nav-item {% if request.path == '/projects' %}active{% endif %}">
+          <span class="nav-icon">📁</span>Projects
+        </a>
+        <a href="/growth" class="nav-item {% if request.path == '/growth' %}active{% endif %}">
+          <span class="nav-icon">📈</span>Growth
+        </a>
+      </nav>
+
+      <div class="header-right-badges">
+        <!-- Live Confidence Index Pill -->
+        <a href="/confidence" class="header-conf-badge" title="Workspace Confidence Index">
+          <span class="pulse-indicator"></span>
+          <span class="conf-metric">{{ confidence_score }}% Confident</span>
+        </a>
+
+        <!-- Gamification Points Pill -->
+        <div class="points-pill" title="Total SkillPoints Earned">
+          <span class="pill-star">★</span>
+          <span class="pill-val">{{ total_points }}</span>
+          <span class="pill-lbl">pts</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+              <div class="flash-icon">
+                {% if category == 'success' %}✓{% elif category == 'error' %}✕{% else %}ℹ{% endif %}
+              </div>
+              <div class="flash-text">{{ message }}</div>
+              <button type="button" class="flash-close" onclick="this.parentElement.remove()">×</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Global Floating AI Doubt Assistant Trigger -->
+  <button type="button" class="floating-ai-trigger" id="openDoubtDrawerBtn" title="Ask AI Doubt from any page">
+    <span class="trigger-glow"></span>
+    <span class="trigger-icon">⚡</span>
+    <span class="trigger-text">Ask AI Doubt</span>
+  </button>
+
+  <!-- Slide-Over Cyber Doubt Drawer -->
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="doubt-drawer" id="doubtDrawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div class="drawer-title-wrap">
+        <span class="drawer-icon">⚡</span>
+        <div>
+          <h3>Quick AI Doubt Assistant</h3>
+          <p class="drawer-sub">Instant verified answers · Earn +15 pts anywhere</p>
+        </div>
+      </div>
+      <button type="button" class="drawer-close" id="closeDoubtDrawerBtn" aria-label="Close Drawer">×</button>
+    </div>
+
+    <div class="drawer-body">
+      <form id="drawerDoubtForm" class="drawer-form">
+        <div class="drawer-input-group">
+          <label for="drawerQueryInput">What is your technical or conceptual doubt?</label>
+          <textarea 
+            id="drawerQueryInput" 
+            rows="3" 
+            required 
+            placeholder="e.g. Difference between INNER and LEFT JOIN, or why does my React useEffect trigger infinite loops?"
+          ></textarea>
+        </div>
+
+        <div class="drawer-options-row">
+          <div class="drawer-select-wrap">
+            <label for="drawerCatSelect">Domain</label>
+            <select id="drawerCatSelect">
+              <option value="General">Auto-Detect Domain</option>
+              <option value="SQL & Databases">SQL & Databases</option>
+              <option value="Python & Programming">Python & Programming</option>
+              <option value="Frontend & Web Development">Frontend & Web</option>
+              <option value="Machine Learning & AI">Machine Learning</option>
+              <option value="Cloud & DevOps">Cloud & DevOps</option>
+            </select>
+          </div>
+          <button type="submit" class="button glow-btn drawer-submit-btn" id="drawerSubmitBtn">
+            <span>Solve & Clear (+15 pts) ⚡</span>
+          </button>
+        </div>
+      </form>
+
+      <div class="drawer-loading" id="drawerLoading" style="display:none;">
+        <div class="cyber-spinner"></div>
+        <p>Analyzing concept & synthesizing verified answer...</p>
+      </div>
+
+      <div class="drawer-result" id="drawerResult" style="display:none;">
+        <div class="drawer-result-header">
+          <span class="tag tag-category" id="drawerResCat">Domain</span>
+          <span class="tag tag-confidence" id="drawerResScore">🛡️ 98% Accuracy</span>
+          <span class="tag tag-success">✓ Cleared (+15 pts)</span>
+        </div>
+
+        <h4 class="drawer-res-title" id="drawerResQ">Question</h4>
+
+        <div class="takeaway-box">
+          <span class="box-icon">💡</span>
+          <div>
+            <strong>Core Takeaway:</strong>
+            <p id="drawerResShort">Short explanation</p>
+          </div>
+        </div>
+
+        <div class="drawer-deep-dive">
+          <strong>Step-by-Step Breakdown:</strong>
+          <p id="drawerResDetail">Detailed explanation</p>
+        </div>
+
+        <div class="code-wrapper" id="drawerCodeWrap" style="display:none;">
+          <div class="code-header">
+            <span class="code-lang">Verified Code Pattern</span>
+            <button type="button" class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+          </div>
+          <pre class="code-block"><code id="drawerResCode"></code></pre>
+        </div>
+
+        <div class="pitfall-box" id="drawerPitfallWrap" style="display:none;">
+          <span class="pitfall-icon">⚠️</span>
+          <div>
+            <strong>Trap to Avoid:</strong>
+            <p id="drawerResPitfall"></p>
+          </div>
+        </div>
+
+        <div class="drawer-footer-actions">
+          <a href="/doubts" class="action-link">Open Full Doubts Vault →</a>
+          <button type="button" class="button button-sm secondary" id="drawerClearAnotherBtn">Ask Another Doubt</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Futuristic Cyber Footer -->
+  <footer class="cyber-footer">
+    <div class="wrap footer-content">
+      <div class="footer-left">
+        <div class="footer-brand">
+          <span class="brand-bolt">⚡</span>
+          <strong>SkillBridge AI</strong>
+          <span class="version-tag">v2.5 Super Edition</span>
+        </div>
+        <p class="footer-desc">
+          Autonomous competency assessment, multi-dimensional gap analytics, 
+          and explainable doubt resolution engineered for high-confidence career growth.
+        </p>
+      </div>
+      <div class="footer-nav">
+        <div class="footer-col">
+          <strong>Intelligence</strong>
+          <a href="/">Skill Assessment</a>
+          <a href="/doubts">AI Doubt Clarifier</a>
+          <a href="/confidence">Confidence Radar</a>
+          <a href="/intelligence">Explainable Gaps</a>
+        </div>
+        <div class="footer-col">
+          <strong>Execution</strong>
+          <a href="/missions">Skill Missions</a>
+          <a href="/passport">Skill Passport</a>
+          <a href="/sprint">Sprint Planner</a>
+          <a href="/interview">AI Mock Interview</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom wrap">
+      <span>Built with confidence & precision · SkillBridge AI Platform</span>
+      <a href="/health" class="health-indicator">● System Status: Healthy</a>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

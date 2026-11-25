@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Skill Mission Arena | Practical Code Challenges{% endblock %}
+
+{% block content %}
+<section class="page-head hero-creative">
+  <div class="head-pill">
+    <span class="pill-glow"></span>
+    <span class="pill-text">HANDS-ON CODING ARENA</span>
+  </div>
+  <h1>Skill Mission Arena<br><span class="gradient-text">Turn Knowledge into Muscle Memory.</span></h1>
+  <p class="lead">
+    Complete bite-sized practical coding and analysis challenges. Earn points, build confidence, and verify your implementation with sample approaches.
+  </p>
+</section>
+
+<div class="mission-grid">
+  {% for m in missions %}
+    <article class="panel glass-panel mission-card">
+      <div class="mission-meta">
+        <div class="mission-tags">
+          <span class="tag tag-category">{{ m.skill }}</span>
+          <span class="tag tag-level">{{ m.level }}</span>
+        </div>
+        <div class="points-badge-sm">+{{ m.points }} pts</div>
+      </div>
+
+      <h2 class="mission-title">{{ m.title }}</h2>
+      <p class="mission-task">{{ m.task }}</p>
+
+      <details class="mission-details">
+        <summary class="mission-summary">
+          <span>Show Hint & Verified Solution</span>
+          <span class="toggle-arrow">▼</span>
+        </summary>
+        <div class="mission-hint-box">
+          <p class="hint-text"><strong>💡 Hint:</strong> {{ m.hint }}</p>
+          <div class="code-wrapper">
+            <div class="code-header">
+              <span class="code-lang">{{ m.skill }} Solution</span>
+              <button type="button" class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+            </div>
+            <pre class="code-block"><code>{{ m.answer }}</code></pre>
+          </div>
+        </div>
+      </details>
+
+      {% if m.id in completed %}
+        <div class="mission-completed-badge">
+          <span class="status-icon">✓</span>
+          <span>Mission Completed & Points Awarded</span>
+        </div>
+      {% else %}
+        <form method="POST" class="mission-form">
+          <input type="hidden" name="mission_id" value="{{ m.id }}">
+          <label for="ans_{{ m.id }}">Your Code / Solution</label>
+          <textarea 
+            id="ans_{{ m.id }}" 
+            name="answer" 
+            rows="3" 
+            required 
+            placeholder="Write your code or explanation here..."
+          ></textarea>
+          <button class="button glow-btn button-full" type="submit">
+            Save Attempt & Claim +{{ m.points }} pts ⚡
+          </button>
+        </form>
+      {% endif %}
+    </article>
+  {% endfor %}
+</div>
+{% endblock %}

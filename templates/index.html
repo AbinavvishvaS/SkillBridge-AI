@@ -1,0 +1,410 @@
+{% extends "base.html" %}
+{% block title %}SkillBridge AI | Super Edition - Career Gap Intelligence & Multi-Skill Radar{% endblock %}
+
+{% block content %}
+<!-- Super Edition Futuristic Hero -->
+<section class="hero hero-creative">
+  <div class="hero-pill">
+    <span class="pill-glow"></span>
+    <span class="pill-text">INTELLIGENT CAREER BENCHMARK & MULTI-SKILL RADAR</span>
+  </div>
+  <h1>Build High-Demand Skills.<br><span class="gradient-text">Clear Doubts. Bridge the Gap.</span></h1>
+  <p class="lead">
+    Empowering professionals with multi-dimensional skill diagnostics, real-time SVG competency radar charts,
+    and verified AI doubt clearance for unshakeable career confidence.
+  </p>
+
+  <div class="hero-stats-banner">
+    <div class="banner-stat">
+      <span class="stat-number">6 Tracks</span>
+      <span class="stat-label">Industry Frameworks</span>
+    </div>
+    <div class="banner-divider"></div>
+    <div class="banner-stat">
+      <span class="stat-number">5 Dimensions</span>
+      <span class="stat-label">Competency Depth</span>
+    </div>
+    <div class="banner-divider"></div>
+    <div class="banner-stat">
+      <span class="stat-number">98%+</span>
+      <span class="stat-label">Doubt Accuracy</span>
+    </div>
+    <div class="banner-divider"></div>
+    <div class="banner-stat">
+      <span class="stat-number">+15 pts</span>
+      <span class="stat-label">Per Doubt Cleared</span>
+    </div>
+  </div>
+
+  <div class="hero-actions-row">
+    <a href="#assessment" class="button glow-btn">Start Skill Assessment ↓</a>
+    <a href="/doubts" class="button secondary">Ask AI Doubt ⚡</a>
+    <a href="/confidence" class="button outline">View Confidence Radar 🛡️</a>
+  </div>
+</section>
+
+<!-- Assessment Panel -->
+<section class="panel glass-panel" id="assessment">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">PROFILE DIAGNOSTIC</p>
+      <h2>Select Career Path & Rate Your Skill Depth</h2>
+    </div>
+    <span class="tag tag-glow">6 PROFESSIONAL PATHS</span>
+  </div>
+    <div class="section-title">
+      <div>
+        <p class="eyebrow">PROFILE DIAGNOSTIC</p>
+        <h2>Select Career Path & Rate Your Skill Depth</h2>
+      </div>
+      <span class="tag tag-glow">6 PROFESSIONAL PATHS</span>
+    </div>
+
+    {% if error %}
+      <div class="flash flash-error">
+        <div class="flash-icon">✕</div>
+        <div class="flash-text">{{ error }}</div>
+      </div>
+    {% endif %}
+
+    <form method="POST" class="assessment-form" id="assessmentForm">
+      <div class="form-group">
+        <label for="career">Target Career Path</label>
+        <select id="career" name="career" required>
+          <option value="">-- Choose a target professional path --</option>
+          {% for c in careers %}
+            <option value="{{ c }}" {% if result and result.career==c %}selected{% endif %}>
+              {{ c }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <div class="label-with-hint">
+          <label>Select Demonstrated Skills & Proficiency Depth</label>
+          <span class="muted-hint">Check the skills you possess and optionally indicate your mastery level</span>
+        </div>
+        
+        <div class="advanced-skill-grid">
+          {% for skill in all_skills %}
+            <div class="advanced-skill-card" data-skill="{{ skill }}">
+              <div class="skill-card-top">
+                <label class="skill-checkbox-label">
+                  <input 
+                    type="checkbox" 
+                    name="skills" 
+                    value="{{ skill }}" 
+                    class="skill-check-input"
+                    {% if result and skill in result.matching %}checked{% endif %}
+                    onchange="toggleProficiencyPicker(this)"
+                  >
+                  <span class="skill-custom-check"></span>
+                  <span class="skill-name-text">{{ skill }}</span>
+                </label>
+                <span class="skill-dimension-tag">{{ skill_dimensions.get(skill, 'Core') }}</span>
+              </div>
+
+              <!-- Proficiency Pill Selector -->
+              <div class="proficiency-selector-wrap" style="{% if result and skill in result.matching %}display:flex;{% else %}display:none;{% endif %}">
+                <span class="prof-label">Level:</span>
+                <label class="prof-chip">
+                  <input type="radio" name="prof_{{ skill }}" value="Familiar">
+                  <span>Familiar</span>
+                </label>
+                <label class="prof-chip">
+                  <input type="radio" name="prof_{{ skill }}" value="Proficient" checked>
+                  <span>Proficient</span>
+                </label>
+                <label class="prof-chip">
+                  <input type="radio" name="prof_{{ skill }}" value="Mastered">
+                  <span>Master</span>
+                </label>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="form-submit-row">
+        <button class="button glow-btn" type="submit">
+          Generate Multi-Dimensional Skill Analysis →
+        </button>
+        <span class="helper-text">Calculates coverage %, weighted mastery %, 5-axis radar & cross-role transferability.</span>
+      </div>
+    </form>
+  </section>
+
+  <!-- Detailed Advanced Assessment Report (if generated) -->
+  {% if result %}
+  <section class="panel glass-panel report-panel" id="report">
+    <div class="section-title">
+      <div>
+        <p class="eyebrow">STEP 02 / DEEP COMPETENCY REPORT</p>
+        <h2>{{ result.career }} Readiness Blueprint</h2>
+      </div>
+      <div class="report-top-actions">
+        <button type="button" class="button button-sm secondary" onclick="window.print()">
+          🖨️ Export / Print Report
+        </button>
+        <span class="tag tag-glow">MATCH: {{ result.readiness }}%</span>
+      </div>
+    </div>
+
+    <!-- Primary Metrics Overview Cards -->
+    <div class="metrics-quad-grid">
+      <div class="metric-quad-card glass-card">
+        <span class="quad-label">Core Role Coverage</span>
+        <strong class="quad-value">{{ result.readiness }}%</strong>
+        <span class="quad-sub">{{ result.matched_count }} of {{ result.required_count }} Required Skills</span>
+        <div class="mini-bar-track">
+          <div class="mini-bar-fill" style="width: {{ result.readiness }}%;"></div>
+        </div>
+      </div>
+
+      <div class="metric-quad-card glass-card">
+        <span class="quad-label">Weighted Mastery Index</span>
+        <strong class="quad-value text-teal">{{ result.weighted_readiness }}%</strong>
+        <span class="quad-sub">Adjusted for Proficiency Depth</span>
+        <div class="mini-bar-track">
+          <div class="mini-bar-fill fill-cyan" style="width: {{ result.weighted_readiness }}%;"></div>
+        </div>
+      </div>
+
+      <div class="metric-quad-card glass-card">
+        <span class="quad-label">Study Hours to 100%</span>
+        <strong class="quad-value text-amber">{{ result.total_hours }}h</strong>
+        <span class="quad-sub">~{{ result.weeks_to_ready }} Weeks at 8 hrs/week</span>
+        <div class="mini-bar-track">
+          <div class="mini-bar-fill fill-amber" style="width: {{ (result.total_hours / 60 * 100)|round if result.total_hours < 60 else 100 }}%;"></div>
+        </div>
+      </div>
+
+      <div class="metric-quad-card glass-card">
+        <span class="quad-label">Cross-Role Transferability</span>
+        <strong class="quad-value text-indigo">{{ result.transferability_score }}%</strong>
+        <span class="quad-sub">Top Alt: {{ result.top_alt_role }} ({{ result.top_alt_percent }}%)</span>
+        <div class="mini-bar-track">
+          <div class="mini-bar-fill fill-indigo" style="width: {{ result.transferability_score }}%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5-Axis Spider Radar Chart & Multi-Career Benchmark Section -->
+    <div class="two-col radar-matrix-row">
+      <!-- 5-Axis SVG Spider / Radar Chart -->
+      <div class="subpanel glass-card">
+        <div class="subpanel-header">
+          <span class="subpanel-icon text-cyan">🕸️</span>
+          <h3>5-Axis Competency Radar</h3>
+        </div>
+        <p class="muted">Visual distribution across the 5 fundamental engineering dimensions:</p>
+
+        <div class="radar-chart-container" id="radarChartContainer">
+          <svg class="radar-svg" viewBox="0 0 340 320" id="radarSvg">
+            <!-- Background Webs -->
+            <polygon points="170,25 303,122 252,280 88,280 37,122" class="radar-web-grid-1"></polygon>
+            <polygon points="170,60 270,132 232,250 108,250 70,132" class="radar-web-grid-2"></polygon>
+            <polygon points="170,95 237,143 211,220 129,220 103,143" class="radar-web-grid-3"></polygon>
+            <polygon points="170,130 203,154 191,190 149,190 137,154" class="radar-web-grid-4"></polygon>
+
+            <!-- Axes lines -->
+            <line x1="170" y1="165" x2="170" y2="25" class="radar-axis-line"></line>
+            <line x1="170" y1="165" x2="303" y2="122" class="radar-axis-line"></line>
+            <line x1="170" y1="165" x2="252" y2="280" class="radar-axis-line"></line>
+            <line x1="170" y1="165" x2="88" y2="280" class="radar-axis-line"></line>
+            <line x1="170" y1="165" x2="37" y2="122" class="radar-axis-line"></line>
+
+            <!-- Filled Data Polygon -->
+            {% set r = result.radar_scores %}
+            {% set v1 = r['Coding & Syntax'] / 100 %}
+            {% set v2 = r['Data & Databases'] / 100 %}
+            {% set v3 = r['Frameworks & Systems'] / 100 %}
+            {% set v4 = r['Problem Solving & Math'] / 100 %}
+            {% set v5 = r['DevOps & Tooling'] / 100 %}
+
+            {% set p1_x = 170 %}
+            {% set p1_y = 165 - (140 * v1) %}
+            {% set p2_x = 170 + (133 * v2) %}
+            {% set p2_y = 165 - (43 * v2) %}
+            {% set p3_x = 170 + (82 * v3) %}
+            {% set p3_y = 165 + (115 * v3) %}
+            {% set p4_x = 170 - (82 * v4) %}
+            {% set p4_y = 165 + (115 * v4) %}
+            {% set p5_x = 170 - (133 * v5) %}
+            {% set p5_y = 165 - (43 * v5) %}
+
+            <polygon 
+              id="radarDataPolygon"
+              points="{{ p1_x }},{{ p1_y }} {{ p2_x }},{{ p2_y }} {{ p3_x }},{{ p3_y }} {{ p4_x }},{{ p4_y }} {{ p5_x }},{{ p5_y }}" 
+              class="radar-data-polygon"
+            ></polygon>
+
+            <!-- Points -->
+            <circle id="pt1" cx="{{ p1_x }}" cy="{{ p1_y }}" r="4" class="radar-point"></circle>
+            <circle id="pt2" cx="{{ p2_x }}" cy="{{ p2_y }}" r="4" class="radar-point"></circle>
+            <circle id="pt3" cx="{{ p3_x }}" cy="{{ p3_y }}" r="4" class="radar-point"></circle>
+            <circle id="pt4" cx="{{ p4_x }}" cy="{{ p4_y }}" r="4" class="radar-point"></circle>
+            <circle id="pt5" cx="{{ p5_x }}" cy="{{ p5_y }}" r="4" class="radar-point"></circle>
+
+            <!-- Labels -->
+            <text x="170" y="14" class="radar-label" text-anchor="middle">Coding ({{ r['Coding & Syntax'] }}%)</text>
+            <text x="310" y="125" class="radar-label" text-anchor="start">Data ({{ r['Data & Databases'] }}%)</text>
+            <text x="260" y="296" class="radar-label" text-anchor="middle">Frameworks ({{ r['Frameworks & Systems'] }}%)</text>
+            <text x="80" y="296" class="radar-label" text-anchor="middle">Math ({{ r['Problem Solving & Math'] }}%)</text>
+            <text x="30" y="125" class="radar-label" text-anchor="end">DevOps ({{ r['DevOps & Tooling'] }}%)</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Multi-Career Transferability Benchmark Matrix -->
+      <div class="subpanel glass-card">
+        <div class="subpanel-header">
+          <span class="subpanel-icon text-indigo">🌐</span>
+          <h3>Cross-Career Benchmark Matrix</h3>
+        </div>
+        <p class="muted">How your acquired skillset transfers across 6 high-demand careers:</p>
+
+        <div class="multi-role-bars">
+          {% for role_name, match_pct in result.multi_role_matches.items() %}
+            <div class="role-benchmark-row {% if role_name == result.career %}current-target{% endif %}">
+              <div class="role-benchmark-header">
+                <span class="role-name">
+                  {% if role_name == result.career %}🎯 <strong>{{ role_name }}</strong> (Selected){% else %}{{ role_name }}{% endif %}
+                </span>
+                <strong class="role-pct">{{ match_pct }}%</strong>
+              </div>
+              <div class="mini-bar-track">
+                <div 
+                  class="mini-bar-fill {% if match_pct >= 70 %}fill-teal{% elif match_pct >= 40 %}fill-cyan{% else %}fill-indigo{% endif %}" 
+                  style="width: {{ match_pct }}%;"
+                ></div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="pivot-callout-box">
+          <span class="pivot-icon">🚀</span>
+          <div>
+            <strong>Best Natural Pivot Track: {{ result.top_alt_role }}</strong>
+            <p>You already meet {{ result.top_alt_percent }}% of requirements for {{ result.top_alt_role }} based on your existing skills.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive "What-If" Skill Simulator -->
+    {% if result.missing %}
+    <section class="simulator-panel glass-card">
+      <div class="simulator-header">
+        <div class="sim-title-group">
+          <span class="sim-badge">REAL-TIME SIMULATOR</span>
+          <h3>Interactive "What-If" Skill Simulator</h3>
+          <p class="muted">Click any missing skill below to simulate learning it. Watch your readiness score and radar grow live!</p>
+        </div>
+        <div class="sim-live-meter">
+          <span class="sim-meter-label">Simulated Match:</span>
+          <strong class="sim-meter-value" id="simulatedMatchVal">{{ result.readiness }}%</strong>
+        </div>
+      </div>
+
+      <div class="simulator-chips-wrap">
+        {% for gap in result.gap_matrix %}
+          <button 
+            type="button" 
+            class="sim-skill-chip" 
+            data-skill="{{ gap.skill }}"
+            data-career="{{ result.career }}"
+            onclick="simulateSkillToggle(this)"
+          >
+            <span class="sim-plus">+</span>
+            <span class="sim-name">{{ gap.skill }}</span>
+            <span class="sim-hrs">({{ gap.hours }}h)</span>
+          </button>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- Categorized Skill Gap Criticality Matrix -->
+    <section class="gap-matrix-section">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">GAP SEVERITY BREAKDOWN</p>
+          <h3>Actionable Roadmap to 100% Mastery</h3>
+        </div>
+        <span class="tag tag-glow">{{ result.missing|length }} GAPS TO BRIDGE</span>
+      </div>
+
+      <div class="gap-cards-grid">
+        {% for gap in result.gap_matrix %}
+          <div class="gap-card glass-card">
+            <div class="gap-card-header">
+              <span class="tag {{ gap.badge }}">{{ gap.priority }}</span>
+              <span class="gap-hrs-badge">⏱️ ~{{ gap.hours }} Hours</span>
+            </div>
+
+            <h4 class="gap-skill-title">{{ gap.skill }}</h4>
+            <p class="gap-action">{{ gap.action }}</p>
+
+            <div class="gap-card-footer">
+              <button 
+                type="button" 
+                class="button button-sm glow-btn"
+                onclick="launchDoubtForSkill('{{ gap.skill }}')"
+              >
+                Clear {{ gap.skill }} Doubts ⚡
+              </button>
+              <a href="/missions" class="action-link">Solve Mission ↗</a>
+            </div>
+          </div>
+        {% else %}
+          <div class="all-cleared-banner glass-card">
+            <span class="cleared-icon">🎉</span>
+            <h3>100% Core Competency Achieved!</h3>
+            <p>You have demonstrated all core skills for {{ result.career }}. Head to Mock Interview Studio or Digital Skill Passport.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  </section>
+  {% endif %}
+<!-- Innovative Features Hub -->
+<section class="feature-grid">
+  <a class="feature glass-card" href="/doubts">
+    <div class="feature-icon-badge">💡</div>
+    <b>AI Doubt Resolver</b>
+    <span>Find exact conceptual doubts, get step-by-step clarity, and test your understanding.</span>
+    <span class="feature-link">Explore Doubts →</span>
+  </a>
+
+  <a class="feature glass-card" href="/confidence">
+    <div class="feature-icon-badge">🛡️</div>
+    <b>Confidence Level Radar</b>
+    <span>Live confidence quotient, pillar breakdown, and rapid benchmark diagnostic test.</span>
+    <span class="feature-link">View Radar →</span>
+  </a>
+
+  <a class="feature glass-card" href="/missions">
+    <div class="feature-icon-badge">⚔️</div>
+    <b>Skill Mission Arena</b>
+    <span>Interactive coding challenges with instant hints, sample code, and point rewards.</span>
+    <span class="feature-link">Open Arena →</span>
+  </a>
+
+  <a class="feature glass-card" href="/passport">
+    <div class="feature-icon-badge">◈</div>
+    <b>Digital Skill Passport</b>
+    <span>Stamp your real portfolio projects, certifications, GitHub repos, and milestones.</span>
+    <span class="feature-link">Open Passport →</span>
+  </a>
+
+  <a class="feature glass-card" href="/growth">
+    <div class="feature-icon-badge">📈</div>
+    <b>Career Growth Radar</b>
+    <span>Full activity snapshot, sprint task metrics, and holistic confidence progression.</span>
+    <span class="feature-link">View Growth →</span>
+  </a>
+</section>
+{% endblock %}

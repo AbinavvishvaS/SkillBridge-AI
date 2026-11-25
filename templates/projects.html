@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Project Recommender | Portfolio Architecture{% endblock %}
+
+{% block content %}
+<section class="page-head hero-creative">
+  <div class="head-pill">
+    <span class="pill-glow"></span>
+    <span class="pill-text">PORTFOLIO ACCELERATOR</span>
+  </div>
+  <h1>Project Recommender<br><span class="gradient-text">Proof of Skill in Production.</span></h1>
+  <p class="lead">
+    High-impact portfolio project ideas custom-tailored to cover the missing skills identified in your <strong>{{ career }}</strong> assessment.
+  </p>
+</section>
+
+<section class="panel glass-panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">CUSTOM PROJECT BLUEPRINTS</p>
+      <h2>Recommended Projects for {{ career }}</h2>
+    </div>
+    <span class="tag tag-glow">PORTFOLIO BUILDER</span>
+  </div>
+
+  <div class="projects-grid">
+    {% for skill, idea in ideas %}
+      <article class="project-card glass-card">
+        <div class="project-card-header">
+          <span class="tag tag-category">{{ skill }}</span>
+          <span class="tag tag-glow">HIGH IMPACT</span>
+        </div>
+
+        <h3 class="project-title">{{ idea }}</h3>
+        <p class="muted">
+          Suggested execution: Architect a clean repository with a descriptive README, unit tests, and deploy a live demo.
+        </p>
+
+        <div class="project-card-actions">
+          <a class="button button-sm glow-btn" href="/passport">Record in Passport ◈</a>
+          <a class="button button-sm secondary" href="/doubts?q={{ skill|urlencode }}">Clear Doubts on {{ skill }} 💡</a>
+        </div>
+      </article>
+    {% else %}
+      <div class="empty-state">
+        <p class="empty-title">All core skills selected!</p>
+        <p class="muted">Build an advanced full-stack capstone project that blends all core skills and record it in your Passport.</p>
+        <a class="button glow-btn" href="/passport">Add Capstone to Passport ◈</a>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

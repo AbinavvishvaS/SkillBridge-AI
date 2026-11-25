@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block title %}Career Confidence Radar & Diagnostic Hub{% endblock %}
+
+{% block content %}
+<section class="page-head hero-creative">
+  <div class="head-pill">
+    <span class="pill-glow"></span>
+    <span class="pill-text">EVIDENCE-BACKED READINESS</span>
+  </div>
+  <h1>Confidence Level Radar<br><span class="gradient-text">Ground Your Skills in Certainty.</span></h1>
+  <p class="lead">
+    Confidence is not guessing — it is built on cleared doubts, solved missions, validated evidence, and articulate interview answers.
+    Track your live Confidence Index and complete the Rapid Verification Test below.
+  </p>
+</section>
+
+<!-- Main Confidence Score Display -->
+<section class="panel glass-panel confidence-hero-card">
+  <div class="confidence-display-grid">
+    <div class="gauge-column">
+      <div class="radial-gauge-container">
+        <svg class="radial-svg" viewBox="0 0 160 160">
+          <circle class="radial-bg" cx="80" cy="80" r="70"></circle>
+          <circle 
+            class="radial-meter" 
+            cx="80" 
+            cy="80" 
+            r="70"
+            style="stroke-dashoffset: calc(440 - (440 * {{ confidence.score }}) / 100);"
+          ></circle>
+        </svg>
+        <div class="gauge-center-text">
+          <strong class="gauge-number">{{ confidence.score }}%</strong>
+          <span class="gauge-tier-label">{{ confidence.tier }}</span>
+        </div>
+      </div>
+      <p class="gauge-subcaption">Overall Workspace Confidence Index</p>
+    </div>
+
+    <div class="confidence-summary-column">
+      <div class="tier-badge-wrap">
+        <span class="tier-pill">{{ confidence.tier }}</span>
+        <span class="status-indicator live">● Active Workspace Metrics</span>
+      </div>
+      <h2>Your Confidence Quotient Breakdown</h2>
+      <p class="muted">
+        Every action in SkillBridge elevates your score. Clear conceptual doubts, execute challenges in the Mission Arena, and document real project evidence.
+      </p>
+
+      <div class="pillar-bars">
+        {% for name, val in confidence.breakdown.items() %}
+          <div class="pillar-row">
+            <div class="pillar-info">
+              <span class="pillar-name">{{ name }}</span>
+              <strong class="pillar-score">{{ val }}</strong>
+            </div>
+            <div class="mini-bar-track">
+              {% set parts = val.split('/') %}
+              {% set numerator = parts[0]|int %}
+              {% set denominator = parts[1]|int %}
+              <div class="mini-bar-fill" style="width: {{ (numerator / denominator * 100)|round }}%;"></div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Quick Stats Grid -->
+<div class="stats-grid">
+  <article class="stat glass-card">
+    <div class="stat-icon-wrap">💡</div>
+    <strong class="stat-value">{{ confidence.doubts_cleared }}</strong>
+    <span class="stat-name">Doubts Cleared</span>
+    <small class="stat-hint">+15 pts each towards mastery</small>
+  </article>
+
+  <article class="stat glass-card">
+    <div class="stat-icon-wrap">⚡</div>
+    <strong class="stat-value">{{ confidence.missions_count }}</strong>
+    <span class="stat-name">Missions Completed</span>
+    <small class="stat-hint">Practical code solutions</small>
+  </article>
+
+  <article class="stat glass-card">
+    <div class="stat-icon-wrap">◈</div>
+    <strong class="stat-value">{{ confidence.passport_count }}</strong>
+    <span class="stat-name">Passport Artifacts</span>
+    <small class="stat-hint">Verified projects & certs</small>
+  </article>
+
+  <article class="stat glass-card">
+    <div class="stat-icon-wrap">◎</div>
+    <strong class="stat-value">{{ confidence.interview_count }}</strong>
+    <span class="stat-name">Interview Practices</span>
+    <small class="stat-hint">Self-evaluated responses</small>
+  </article>
+</div>
+
+<!-- Rapid Confidence Diagnostic Quiz -->
+<section class="panel glass-panel quiz-section" id="quiz">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">RAPID BENCHMARK</p>
+      <h2>Target Role: {{ career }} Confidence Check</h2>
+    </div>
+    <span class="tag tag-glow">4 RAPID CHECKS</span>
+  </div>
+
+  <p class="lead-sm">
+    Answer these 4 fundamental conceptual questions to validate your real-world readiness for <strong>{{ career }}</strong>.
+  </p>
+
+  {% if last_quiz %}
+    <div class="previous-result-box">
+      <div class="result-header">
+        <span class="result-badge">Latest Quiz: {{ last_quiz.score }}/{{ last_quiz.total }} ({{ last_quiz.percentage }}%)</span>
+        <span class="result-date">Completed on {{ last_quiz.created_at }}</span>
+      </div>
+      <p class="result-feedback">{{ last_quiz.feedback }}</p>
+    </div>
+  {% endif %}
+
+  <form method="POST" class="quiz-form">
+    {% for q in quiz_questions %}
+      {% set q_idx = loop.index0 %}
+      <div class="quiz-item glass-card">
+        <div class="quiz-item-header">
+          <span class="tag">Question {{ loop.index }}</span>
+          <p class="quiz-question-prompt"><strong>{{ q.q }}</strong></p>
+        </div>
+
+        <div class="quiz-options-list">
+          {% for opt in q.options %}
+            <label class="quiz-option-label">
+              <input type="radio" name="q_{{ q_idx }}" value="{{ opt }}" required>
+              <span class="option-custom-radio"></span>
+              <span class="option-text">{{ opt }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="quiz-submit-bar">
+      <button type="submit" class="button glow-btn">
+        Submit & Verify My Confidence Score ⚡
+      </button>
+      <a href="/doubts" class="button secondary">Have Doubts First? Clear Them Here →</a>
+    </div>
+  </form>
+</section>
+
+<!-- Actionable Steps to 100% Confidence -->
+<section class="panel glass-panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">ROADMAP TO 100% CERTAINTY</p>
+      <h2>Recommended Next Steps for Full Job-Readiness</h2>
+    </div>
+    <span class="tag">CONFIDENCE ACCELERATOR</span>
+  </div>
+
+  <div class="two-col">
+    <div class="action-card glass-card">
+      <div class="action-icon">💡</div>
+      <h3>Clear Foundational Doubts</h3>
+      <p class="muted">
+        Head to the AI Doubt Resolver. Review top questions in {{ career }} and mark them as cleared to remove any lingering confusion.
+      </p>
+      <a href="/doubts" class="action-link">Open Doubt Resolver ↗</a>
+    </div>
+
+    <div class="action-card glass-card">
+      <div class="action-icon">⚡</div>
+      <h3>Tackle Arena Missions</h3>
+      <p class="muted">
+        Coding challenges solidify abstract theory into muscle memory. Solve coding tasks in the Mission Arena.
+      </p>
+      <a href="/missions" class="action-link">Start Coding Missions ↗</a>
+    </div>
+
+    <div class="action-card glass-card">
+      <div class="action-icon">◈</div>
+      <h3>Stamp Real Evidence in Passport</h3>
+      <p class="muted">
+        Nothing builds true confidence like building a tangible project and publishing it to GitHub.
+      </p>
+      <a href="/passport" class="action-link">Add Project Evidence ↗</a>
+    </div>
+
+    <div class="action-card glass-card">
+      <div class="action-icon">◎</div>
+      <h3>Practise Mock Interview Scenarios</h3>
+      <p class="muted">
+        Speaking through technical tradeoffs out loud prepares you to answer interviewers with authoritative confidence.
+      </p>
+      <a href="/interview" class="action-link">Practise Interview Studio ↗</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+

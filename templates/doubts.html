@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+{% block title %}AI Doubt Resolver | Clear Doubts with Confidence{% endblock %}
+
+{% block content %}
+<section class="page-head hero-creative">
+  <div class="head-pill">
+    <span class="pill-glow"></span>
+    <span class="pill-text">ACCURATE & EXPLAINABLE KNOWLEDGE ENGINE</span>
+  </div>
+  <h1>Find Your Doubt.<br><span class="gradient-text">Clear It with 100% Confidence.</span></h1>
+  <p class="lead">
+    Eliminate confusion across SQL, Python, Frontend, Machine Learning, and Career skills.
+    Search curated high-frequency doubts or ask your custom question for instant, verified, step-by-step clarity.
+  </p>
+
+  <div class="hero-stats-banner">
+    <div class="banner-stat">
+      <span class="stat-number">98%+</span>
+      <span class="stat-label">Verified Accuracy</span>
+    </div>
+    <div class="banner-divider"></div>
+    <div class="banner-stat">
+      <span class="stat-number">+15 pts</span>
+      <span class="stat-label">Per Cleared Doubt</span>
+    </div>
+    <div class="banner-divider"></div>
+    <div class="banner-stat">
+      <span class="stat-number">5-Part</span>
+      <span class="stat-label">Deep-Dive Breakdown</span>
+    </div>
+  </div>
+</section>
+
+<!-- Ask Custom Doubt Panel -->
+<section class="panel glass-panel query-panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">INSTANT AI CLARIFIER</p>
+      <h2>Ask Any Technical or Career Doubt</h2>
+    </div>
+    <span class="tag tag-glow">GROUNDED & ACCURATE</span>
+  </div>
+
+  <form method="POST" class="doubt-form">
+    <div class="form-grid">
+      <div class="full">
+        <label for="doubt_input">What is your question or confusing concept?</label>
+        <div class="input-with-button">
+          <input
+            id="doubt_input"
+            name="question"
+            type="text"
+            required
+            placeholder="e.g. When should I use INNER JOIN vs LEFT JOIN? Or why does my React useEffect loop infinitely?"
+            value="{{ search_query if search_query else '' }}"
+          >
+          <button class="button glow-btn" type="submit">
+            <span>Resolve Doubt & Boost Confidence ⚡</span>
+          </button>
+        </div>
+        <p class="helper">
+          Enter any programming, database, algorithmic, or career question. Our engine provides immediate answers with code examples and pitfalls.
+        </p>
+      </div>
+      <div>
+        <label for="doubt_category">Optional Topic Category</label>
+        <select id="doubt_category" name="category">
+          <option value="General">General / Auto-detect</option>
+          <option value="SQL & Databases">SQL & Databases</option>
+          <option value="Python & Programming">Python & Programming</option>
+          <option value="Frontend & Web Development">Frontend & Web Development</option>
+          <option value="Machine Learning & AI">Machine Learning & AI</option>
+          <option value="Data Analysis & Statistics">Data Analysis & Statistics</option>
+          <option value="Git & Version Control">Git & Version Control</option>
+        </select>
+      </div>
+    </div>
+  </form>
+</section>
+
+<!-- Filter & Search Toolbar -->
+<section class="filter-section">
+  <div class="search-filter-bar">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input 
+        type="text" 
+        id="doubtSearchInput" 
+        placeholder="Filter doubts instantly by keywords (e.g. join, list, null, react, overfitting)..."
+        value="{{ search_query }}"
+      >
+      <span id="matchCounter" class="match-badge">Showing all</span>
+    </div>
+
+    <div class="category-pills">
+      {% for cat in categories %}
+        <a 
+          href="/doubts?category={{ cat|urlencode }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}" 
+          class="cat-chip {% if active_category == cat %}active{% endif %}"
+        >
+          {{ cat }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- User Saved Doubts Section (if any) -->
+{% if user_doubts %}
+<section class="panel glass-panel user-doubts-section">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">MY WORKSPACE KNOWLEDGE VAULT</p>
+      <h2>Your Saved & Resolved Doubts ({{ user_doubts|length }})</h2>
+    </div>
+    <span class="tag tag-success">CLEARED CONCEPTS</span>
+  </div>
+
+  <div class="doubts-list">
+    {% for ud in user_doubts %}
+      <article class="doubt-card glass-card user-resolved-card" data-category="{{ ud.category }}">
+        <div class="doubt-header">
+          <div class="meta-tags">
+            <span class="tag tag-category">{{ ud.category }}</span>
+            <span class="tag tag-confidence">🛡️ {{ ud.confidence_score }}% Accuracy Grounding</span>
+          </div>
+          <div class="doubt-actions">
+            <form method="POST" action="/doubts/toggle/{{ ud.id }}">
+              {% if ud.is_cleared %}
+                <button type="submit" class="status-btn cleared" title="Click to toggle status">
+                  ✓ Cleared & Confident
+                </button>
+              {% else %}
+                <button type="submit" class="status-btn review" title="Click to mark cleared">
+                  Mark as Cleared (+15 pts)
+                </button>
+              {% endif %}
+            </form>
+          </div>
+        </div>
+
+        <h3 class="doubt-title">{{ ud.question }}</h3>
+
+        <div class="takeaway-box">
+          <span class="box-icon">💡</span>
+          <div>
+            <strong>Direct Core Takeaway:</strong>
+            <p>{{ ud.short_answer }}</p>
+          </div>
+        </div>
+
+        <details class="doubt-deep-dive" open>
+          <summary class="deep-dive-toggle">
+            <span>Step-by-Step Deep-Dive Explanation & Insights</span>
+            <span class="toggle-arrow">▼</span>
+          </summary>
+          <div class="deep-dive-content">
+            <div class="explanation-text">
+              <p>{{ ud.detailed_explanation | replace('\n', '<br>') | safe }}</p>
+            </div>
+
+            {% if ud.code_example %}
+              <div class="code-wrapper">
+                <div class="code-header">
+                  <span class="code-lang">Verified Code / Pattern</span>
+                  <button type="button" class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+                </div>
+                <pre class="code-block"><code>{{ ud.code_example }}</code></pre>
+              </div>
+            {% endif %}
+
+            {% if ud.common_pitfall %}
+              <div class="pitfall-box">
+                <span class="pitfall-icon">⚠️</span>
+                <div>
+                  <strong>Common Trap / Mistake to Avoid:</strong>
+                  <p>{{ ud.common_pitfall }}</p>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </details>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- Curated Knowledge Bank -->
+<section class="panel glass-panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">ESSENTIAL FOUNDATIONS</p>
+      <h2>Curated High-Impact Conceptual Doubts</h2>
+    </div>
+    <span class="tag tag-glow">PEER-TESTED</span>
+  </div>
+
+  <div class="doubts-list" id="curatedDoubtsContainer">
+    {% for cd in curated_doubts %}
+      <article 
+        class="doubt-card glass-card" 
+        data-category="{{ cd.category }}"
+        data-search="{{ cd.question|lower }} {{ cd.short_answer|lower }} {{ cd.category|lower }}"
+      >
+        <div class="doubt-header">
+          <div class="meta-tags">
+            <span class="tag tag-category">{{ cd.category }}</span>
+            <span class="tag tag-confidence">🛡️ {{ cd.confidence_score }}% Confidence Grounding</span>
+          </div>
+          <div class="doubt-actions">
+            {% if cd.question in cleared_refs %}
+              <span class="status-badge-cleared">✓ Cleared (+15 pts)</span>
+            {% else %}
+              <form method="POST" action="/doubts/clear-curated">
+                <input type="hidden" name="curated_id" value="{{ cd.id }}">
+                <button type="submit" class="button button-sm glow-btn">
+                  Mark Cleared & Confident (+15 pts)
+                </button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+
+        <h3 class="doubt-title">{{ cd.question }}</h3>
+
+        <div class="takeaway-box">
+          <span class="box-icon">💡</span>
+          <div>
+            <strong>Direct Core Takeaway:</strong>
+            <p>{{ cd.short_answer }}</p>
+          </div>
+        </div>
+
+        <details class="doubt-deep-dive">
+          <summary class="deep-dive-toggle">
+            <span>View Full Breakdown, Code & Gotchas</span>
+            <span class="toggle-arrow">▼</span>
+          </summary>
+          <div class="deep-dive-content">
+            <div class="explanation-text">
+              <p>{{ cd.detailed_explanation }}</p>
+            </div>
+
+            <div class="code-wrapper">
+              <div class="code-header">
+                <span class="code-lang">Clean Code Demonstration</span>
+                <button type="button" class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+              </div>
+              <pre class="code-block"><code>{{ cd.code_example }}</code></pre>
+            </div>
+
+            <div class="pitfall-box">
+              <span class="pitfall-icon">⚠️</span>
+              <div>
+                <strong>Common Pitfall to Watch For:</strong>
+                <p>{{ cd.common_pitfall }}</p>
+              </div>
+            </div>
+
+            {% if cd.quiz_question %}
+              <div class="confidence-test-card">
+                <div class="quiz-header">
+                  <span class="quiz-badge">🎯 Quick Confidence Check</span>
+                  <span class="quiz-prompt">Test your understanding right now:</span>
+                </div>
+                <p class="quiz-question-text">{{ cd.quiz_question }}</p>
+                <div class="quiz-reveal-wrap">
+                  <button type="button" class="button button-sm secondary" onclick="toggleQuizAnswer(this)">
+                    Reveal Verified Answer
+                  </button>
+                  <div class="quiz-hidden-answer" style="display:none;">
+                    <span class="answer-badge">✓ Verified Answer:</span>
+                    <p>{{ cd.quiz_answer }}</p>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </details>
+      </article>
+    {% else %}
+      <div class="empty-state">
+        <p class="empty-title">No doubts match your current search.</p>
+        <p class="muted">Try different keywords or submit your question above to resolve it immediately!</p>
+        <a href="/doubts" class="button button-sm secondary">Reset Filters</a>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Confidence Bridge Callout -->
+<section class="confidence-cta-panel">
+  <div class="cta-content">
+    <div class="cta-pill">LEVEL UP YOUR CONFIDENCE</div>
+    <h2>Ready to Benchmark Your Knowledge?</h2>
+    <p>Test your conceptual retention with our Rapid Confidence Diagnostic and earn your readiness badge.</p>
+  </div>
+  <a href="/confidence" class="button glow-btn cta-btn">Take Confidence Diagnostic →</a>
+</section>
+{% endblock %}
+

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Skill Intelligence | Transparent Analysis{% endblock %}
+
+{% block content %}
+<section class="page-head hero-creative">
+  <div class="head-pill">
+    <span class="pill-glow"></span>
+    <span class="pill-text">TRANSPARENT SKILL INTELLIGENCE</span>
+  </div>
+  <h1>Skill Intelligence<br><span class="gradient-text">Understand the 'Why' Behind Every Gap.</span></h1>
+  <p class="lead">
+    Clear explanations of why each skill matters for <strong>{{ career }}</strong>, with concrete study actions and doubt resolution.
+  </p>
+</section>
+
+<section class="panel glass-panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">DIAGNOSTIC EXPLANATIONS</p>
+      <h2>Skills to Bridge for {{ career }}</h2>
+    </div>
+    <span class="tag tag-glow">{{ details|length }} GAPS DETECTED</span>
+  </div>
+
+  <div class="intelligence-list">
+    {% for item in details %}
+      <article class="intelligence-card glass-card">
+        <div class="intelligence-header">
+          <div class="intelligence-meta">
+            <span class="tag tag-category">{{ item.skill }}</span>
+            <span class="tag tag-missing">Skill Gap</span>
+          </div>
+          <a href="/doubts?q={{ item.skill|urlencode }}" class="button button-sm secondary">
+            Find Doubts on {{ item.skill }} 💡
+          </a>
+        </div>
+
+        <h3 class="intelligence-title">{{ item.skill }} in {{ career }}</h3>
+        <p class="intelligence-why"><strong>Why it's essential:</strong> {{ item.why }}</p>
+
+        <div class="intelligence-action-box">
+          <span class="action-icon">🎯</span>
+          <div>
+            <strong>Recommended Practice Action:</strong>
+            <p>{{ item.action }}</p>
+          </div>
+        </div>
+      </article>
+    {% else %}
+      <div class="empty-state">
+        <p class="empty-title">No skill gaps identified!</p>
+        <p class="muted">You have selected all core skills in your latest assessment. Head to the Mock Interview Studio to test your verbal confidence.</p>
+        <a href="/interview" class="button glow-btn">Go to Mock Interview Studio →</a>
+      </div>
+    {% endfor %}
+  </div>
+
+  <p class="notice" style="margin-top: 25px;">
+    SkillBridge Intelligence leverages structured curriculum frameworks and transparent competency models to explain skill requirements without black-box opacity.
+  </p>
+</section>
+{% endblock %}

@@ -1,0 +1,5 @@
+SkillBridge AI feature upgrade
+
+Added pages: Skill Intelligence, Mission Arena, Digital Skill Passport, Smart Learning Sprint, Mock Interview Studio, Project Recommender and Career Growth Radar.
+
+This is a rule-based prototype, not a trained AI model. It does not include authentication or separate role portals because the uploaded source project did not contain them. Data is kept in a local SQLite workspace associated with a browser session. Do not use this as a production multi-user system without adding authentication, authorisation, CSRF protection and privacy/security review.

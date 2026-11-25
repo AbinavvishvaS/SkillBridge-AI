@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Mock Interview Studio | Verbal Confidence Practice{% endblock %}
+
+{% block content %}
+<section class="page-head hero-creative">
+  <div class="head-pill">
+    <span class="pill-glow"></span>
+    <span class="pill-text">ARTICULATION & VERBAL CONFIDENCE</span>
+  </div>
+  <h1>Mock Interview Studio<br><span class="gradient-text">Speak with Technical Authority.</span></h1>
+  <p class="lead">
+    Master real-world technical interview questions. Write structured answers using the STAR method, compare against strong criteria, and self-rate your confidence.
+  </p>
+</section>
+
+<section class="panel glass-panel">
+  <form method="GET" class="role-selector-form">
+    <div class="inline-flex-row">
+      <div class="form-group flex-1">
+        <label for="career_select">Choose Target Career for Questions</label>
+        <select id="career_select" name="career">
+          {% for c in careers %}
+            <option {% if c == career %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button class="button secondary" type="submit">Load Role Questions →</button>
+    </div>
+  </form>
+</section>
+
+{% for q, guide in questions %}
+  <section class="panel glass-panel interview-q-card">
+    <div class="interview-q-meta">
+      <span class="tag tag-glow">Question {{ loop.index }}</span>
+      <span class="tag tag-category">{{ career }}</span>
+    </div>
+
+    <h2 class="interview-q-title">{{ q }}</h2>
+
+    <details class="guide-details">
+      <summary class="guide-summary">
+        <span>💡 What does a hiring manager look for in a strong answer?</span>
+        <span class="toggle-arrow">▼</span>
+      </summary>
+      <div class="guide-box">
+        <p>{{ guide }}</p>
+      </div>
+    </details>
+
+    <form method="POST" class="interview-form">
+      <input type="hidden" name="career" value="{{ career }}">
+      <input type="hidden" name="question" value="{{ q }}">
+
+      <div class="form-group">
+        <label>Your Structured Answer</label>
+        <textarea 
+          name="answer" 
+          rows="4" 
+          required 
+          placeholder="State the core principle, provide a concrete example from your experience or projects, and highlight tradeoffs..."
+        ></textarea>
+      </div>
+
+      <div class="form-row-rating">
+        <div class="rating-select-wrap">
+          <label for="rating_{{ loop.index }}">Self-Confidence Rating</label>
+          <select id="rating_{{ loop.index }}" name="rating">
+            <option value="5">★★★★★ 5 - Fully Confident & Clear</option>
+            <option value="4">★★★★☆ 4 - Good Understanding</option>
+            <option value="3" selected>★★★☆☆ 3 - Fair (Needs slight polish)</option>
+            <option value="2">★★☆☆☆ 2 - Hesitant / Incomplete</option>
+            <option value="1">★☆☆☆☆ 1 - Needs Deep Review</option>
+          </select>
+        </div>
+        <button class="button glow-btn" type="submit">Save Practice Response ✦</button>
+      </div>
+    </form>
+  </section>
+{% endfor %}
+
+<section class="panel glass-panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">YOUR RECORDED RESPONSES</p>
+      <h2>Recent Interview Practice History</h2>
+    </div>
+    <span class="tag">VERBAL LOG</span>
+  </div>
+
+  <div class="history-list">
+    {% for a in attempts %}
+      <article class="list-card glass-card">
+        <div class="history-content">
+          <div class="history-meta">
+            <span class="tag tag-category">{{ a.career }}</span>
+            <span class="tag tag-confidence">Rating: {{ a.self_rating }}/5 Stars</span>
+            <small class="muted">{{ a.created_at }}</small>
+          </div>
+          <h4 class="history-q">{{ a.question }}</h4>
+          <p class="history-ans">{{ a.answer }}</p>
+        </div>
+      </article>
+    {% else %}
+      <p class="muted">No interview responses logged yet. Select a question above and submit your response to build interview confidence.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

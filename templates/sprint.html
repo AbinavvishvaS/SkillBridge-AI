@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Smart Learning Sprint | Weekly Execution Plan{% endblock %}
+
+{% block content %}
+<section class="page-head hero-creative">
+  <div class="head-pill">
+    <span class="pill-glow"></span>
+    <span class="pill-text">ITERATIVE WEEKLY EXECUTION</span>
+  </div>
+  <h1>Smart Learning Sprint<br><span class="gradient-text">Turn Gaps into Definite Action.</span></h1>
+  <p class="lead">
+    Generate a realistic, focused weekly checklist directly addressing missing skills from your latest <strong>{{ career }}</strong> assessment.
+  </p>
+</section>
+
+<section class="panel glass-panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">SPRINT GENERATOR</p>
+      <h2>Plan Your Weekly Study Sprint</h2>
+    </div>
+    <span class="tag tag-glow">AUTOMATED BREAKDOWN</span>
+  </div>
+
+  <div class="sprint-config-flex">
+    <div class="sprint-info">
+      <p>Target Career Direction: <strong class="text-glow">{{ career }}</strong></p>
+      <p class="muted">
+        Focus areas: 
+        {% if missing %}
+          <span class="pill-list-inline">
+            {% for s in missing %}
+              <span class="pill pill-missing">{{ s }}</span>
+            {% endfor %}
+          </span>
+        {% else %}
+          <span class="text-success font-semibold">All core skills selected! Great work.</span>
+        {% endif %}
+      </p>
+    </div>
+
+    <form method="POST" class="inline-sprint-form">
+      <div class="input-unit-wrap">
+        <label for="hours">Study Hours / Week</label>
+        <input id="hours" name="hours" type="number" min="1" max="30" value="5">
+      </div>
+      <button class="button glow-btn" type="submit">Generate Weekly Sprint ⚡</button>
+    </form>
+  </div>
+</section>
+
+<!-- Tasks List -->
+<section class="panel glass-panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">SPRINT BACKLOG</p>
+      <h2>Your Weekly Checklist & Milestones</h2>
+    </div>
+    <span class="tag">CLICK TO TOGGLE</span>
+  </div>
+
+  <div class="sprint-tasks-list">
+    {% for task in tasks %}
+      <form method="POST" action="/sprint/toggle/{{ task.id }}" class="task-card glass-card {% if task.done %}task-completed{% endif %}">
+        <button class="check-toggle-btn {% if task.done %}checked{% endif %}" type="submit" aria-label="Toggle task completion">
+          {{ "✓" if task.done else "" }}
+        </button>
+        <div class="task-details">
+          <div class="task-header-row">
+            <span class="tag tag-category">{{ task.skill }}</span>
+            {% if task.done %}
+              <span class="task-done-badge">Completed ✓</span>
+            {% endif %}
+          </div>
+          <p class="task-text {% if task.done %}line-through{% endif %}">{{ task.task }}</p>
+        </div>
+      </form>
+    {% else %}
+      <div class="empty-state">
+        <p class="empty-title">No tasks generated yet for this week.</p>
+        <p class="muted">Use the generator above to turn your skill gaps into manageable weekly action items.</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

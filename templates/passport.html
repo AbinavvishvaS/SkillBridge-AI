@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Digital Skill Passport | Verified Portfolio & Evidence{% endblock %}
+
+{% block content %}
+<section class="page-head hero-creative">
+  <div class="head-pill">
+    <span class="pill-glow"></span>
+    <span class="pill-text">PORTFOLIO & EVIDENCE VAULT</span>
+  </div>
+  <h1>Digital Skill Passport<br><span class="gradient-text">Proof Beats Claims.</span></h1>
+  <p class="lead">
+    Maintain a verifiable record of deployed projects, GitHub repositories, certifications, and technical milestones.
+  </p>
+</section>
+
+<!-- Add Evidence Form -->
+<section class="panel glass-panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">NEW EVIDENCE ENTRY</p>
+      <h2>Stamp New Skill Evidence</h2>
+    </div>
+    <span class="tag tag-glow">PROOF OF WORK</span>
+  </div>
+
+  <form method="POST" class="form-grid">
+    <div>
+      <label for="kind">Evidence Category</label>
+      <select id="kind" name="kind">
+        <option>Project</option>
+        <option>Certificate</option>
+        <option>GitHub</option>
+        <option>Milestone</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="title">Title / Milestone Name</label>
+      <input id="title" name="title" maxlength="120" required placeholder="e.g. Real-Time Analytics Pipeline on GitHub">
+    </div>
+
+    <div class="full">
+      <label for="url">Public Link / Repository URL (optional)</label>
+      <input id="url" name="url" type="url" placeholder="https://github.com/your-username/your-project">
+    </div>
+
+    <div class="full">
+      <label for="notes">Demonstrated Skills & Implementation Highlights</label>
+      <textarea id="notes" name="notes" rows="3" placeholder="What technical challenges did you solve? Which tools were used?"></textarea>
+    </div>
+
+    <div class="full">
+      <button class="button glow-btn" type="submit">Stamp Evidence into Passport ◈</button>
+    </div>
+  </form>
+</section>
+
+<!-- Saved Evidence List -->
+<section class="panel glass-panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">VERIFIED PASSPORT ENTRIES</p>
+      <h2>My Portfolio Evidence Collection ({{ items|length }})</h2>
+    </div>
+    <span class="tag">VERIFIED</span>
+  </div>
+
+  <div class="passport-cards-grid">
+    {% for item in items %}
+      <article class="passport-card glass-card">
+        <div class="passport-card-header">
+          <span class="tag tag-category">{{ item.kind }}</span>
+          <span class="passport-date">{{ item.created_at }}</span>
+        </div>
+
+        <h3 class="passport-title">{{ item.title }}</h3>
+        <p class="passport-notes">{{ item.notes }}</p>
+
+        {% if item.url %}
+          <div class="passport-link-wrap">
+            <a href="{{ item.url }}" target="_blank" rel="noopener" class="action-link">
+              Inspect Evidence Link ↗
+            </a>
+          </div>
+        {% endif %}
+      </article>
+    {% else %}
+      <div class="empty-state">
+        <p class="empty-title">Your Skill Passport is currently empty.</p>
+        <p class="muted">Add your first project, GitHub repository, or certification above to bolster your confidence score.</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
